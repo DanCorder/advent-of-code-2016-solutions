@@ -6,7 +6,8 @@ namespace AdventOfCode
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine(Day01.SolveProblem1());
+            //Console.WriteLine(Day01.SolveProblem1());
+            Console.WriteLine(Day01.SolveProblem2());
         }
     }
 }
