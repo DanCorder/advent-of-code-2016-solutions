@@ -12,6 +12,16 @@ namespace AdventOfCode
                                 .Sum(rd => rd.SectorId);
         }
 
+        public static string SolveProblem2()
+        {
+            var names = ProblemInput.Select(r => new RoomDetails(r))
+                                    .Where(rd => rd.IsValid)
+                                    .Where(rd => rd.RoomName.Contains("north"))
+                                    .Select(rd => rd.RoomName + " " + rd.SectorId);
+
+            return string.Join(System.Environment.NewLine, names);
+        }
+
         private class RoomDetails
         {
             private static readonly Regex parser = new Regex(@"([\w-]+)-(\d+)\[(\w+)\]");
@@ -35,6 +45,36 @@ namespace AdventOfCode
                     return calculateChecksum() == checksum;
                 }
             }
+
+            public string RoomName
+            {
+                get
+                {
+                    return new string(encryptedName.Select(c => DecryptChar(c, SectorId)).ToArray());
+                }
+            }
+
+            private char DecryptChar(char encryptedChar, int offset)
+            {
+                if (encryptedChar == '-')
+                {
+                    return ' ';
+                }
+
+                var modulatedOffset = offset % 26;
+
+                var encryptedCharIndex = ALPHABET.IndexOf(encryptedChar);
+                var decryptedIndex = encryptedCharIndex + modulatedOffset;
+
+                if (decryptedIndex >= ALPHABET.Length)
+                {
+                    decryptedIndex -= ALPHABET.Length;
+                }
+
+                return ALPHABET[decryptedIndex];
+            }
+
+            private const string ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 
             private string calculateChecksum()
             {
