@@ -1,23 +1,45 @@
 namespace AdventOfCode
 {
+    using System.Linq;
+
     public class Day03
     {
         public static int SolveProblem1()
         {
-            var invalidTriangles = 0;
+            var validTriangles = 0;
 
             foreach (var triangle in Problem1Input)
             {
-                if (isInvalid(triangle))
+                if (isValid(triangle))
                 {
-                    invalidTriangles++;
+                    validTriangles++;
                 }
             }
 
-            return invalidTriangles;
+            return validTriangles;
         }
 
-        private static bool isInvalid(int[] triangleDetails)
+        public static int SolveProblem2()
+        {
+            var validTriangles = 0;
+
+            for (var i = 0; i < Problem1Input.Length / 3; i++)
+            {
+                var triangles = Problem1Input.Skip(3 * i).Take(3).ToList();
+
+                for (var j = 0; j < 3; j++)
+                {
+                    if (isValid(new int[] {triangles[0][j], triangles[1][j], triangles[2][j]}))
+                    {
+                        validTriangles++;
+                    }
+                }
+            }
+
+            return validTriangles;
+        }
+
+        private static bool isValid(int[] triangleDetails)
         {
             return
                 (triangleDetails[0] + triangleDetails[1] > triangleDetails[2]) &&
