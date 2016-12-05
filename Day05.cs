@@ -26,6 +26,35 @@ namespace AdventOfCode
             return code;
         }
 
+        public static string SolveProblem2()
+        {
+            var code = new StringBuilder("________");
+            var index = 0;
+
+            while (code.ToString().Contains("_"))
+            {
+                var hash = CalculateMD5Hash(ProblemInput + index);
+
+                if (hash.StartsWith("00000"))
+                {
+                    var position = 0;
+
+                    if (int.TryParse(hash[5].ToString(), out position))
+                    {
+                        if (position >= 0 && position < 8 && code[position] == '_')
+                        {
+                            code[position] = hash[6];
+                            System.Console.WriteLine("Found char: " + hash[6] + " at position: " + hash[5]);
+                        }
+                    }
+                }
+
+                index++;
+            }
+
+            return code.ToString();
+        }
+
         private static readonly string ProblemInput = "wtnhxymk";
         // private static readonly string ProblemInput = "abc";
 
