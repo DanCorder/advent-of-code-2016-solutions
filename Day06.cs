@@ -22,6 +22,24 @@ namespace AdventOfCode
             return message;
         }
 
+        public static string SolveProblem2()
+        {
+            var rows = ProblemInput.Replace(System.Environment.NewLine, ",").Split(',');
+            var messageLength = rows[0].Length;
+            var message = "";
+
+            for (var i = 0; i < messageLength; i++)
+            {
+                message += rows.Select(r => r[i])
+                    .GroupBy(c => c)
+                    .OrderBy(g => g.Count())
+                    .First()
+                    .Key;
+            }
+
+            return message;
+        }
+
 //         private static readonly string ProblemInput = @"eedadn
 // drvtee
 // eandsr
