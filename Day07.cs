@@ -94,15 +94,8 @@ namespace AdventOfCode
 
             Split(ipAddress, out outsideBrackets, out insideBrackets);
 
-            if (insideBrackets.Any(ContainsAbba))
-            {
-                return false;
-            }
-            if (outsideBrackets.Any(ContainsAbba))
-            {
-                return true;
-            }
-            return false;
+            return outsideBrackets.Any(ContainsAbba) &&
+                    !insideBrackets.Any(ContainsAbba);
         }
 
         private static void Split(string ipAddress, out IList<string> outsideBrackets, out IList<string> insideBrackets)
