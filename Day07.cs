@@ -69,7 +69,7 @@ namespace AdventOfCode
                 babs.AddRange(CalculateBabs(supernetSequence));
             }
 
-            return insideBrackets.Any(ib => ContainsBab(ib, babs));
+            return insideBrackets.Any(ib => babs.Any(bab => ib.Contains(bab)));
         }
 
         private static IList<string> CalculateBabs(string supernetSequence)
@@ -85,18 +85,6 @@ namespace AdventOfCode
             }
 
             return babs;
-        }
-
-        private static bool ContainsBab(string hypernetSequence, IList<string> babs)
-        {
-            foreach (var bab in babs)
-            {
-                if (hypernetSequence.Contains(bab))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         private static bool IsSnoopable(string ipAddress)
@@ -129,7 +117,7 @@ namespace AdventOfCode
                 string substring = null;
                 if (isOutsideBrackets)
                 {
-                    substring = GetSubstring(ipAddress, startIndex, '[');
+                    substring = new string(ipAddress.Skip(startIndex).TakeWhile(c => c != '[').ToArray());
                     if (!string.IsNullOrEmpty(substring))
                     {
                         outsideBrackets.Add(substring);
@@ -137,7 +125,7 @@ namespace AdventOfCode
                 }
                 else
                 {
-                    substring = GetSubstring(ipAddress, startIndex, ']');
+                    substring = new string(ipAddress.Skip(startIndex).TakeWhile(c => c != ']').ToArray());
                     if (!string.IsNullOrEmpty(substring))
                     {
                         insideBrackets.Add(substring);
@@ -147,13 +135,6 @@ namespace AdventOfCode
                 isOutsideBrackets = !isOutsideBrackets;
                 startIndex += (substring.Length + 1);
             }
-        }
-
-        private static string GetSubstring(string ipAddress, int startIndex, char endChar)
-        {
-            var endIndex = ipAddress.IndexOf(endChar, startIndex);
-            endIndex = endIndex == -1 ? ipAddress.Length : endIndex;
-            return ipAddress.Substring(startIndex, endIndex - startIndex);
         }
 
         private static bool ContainsAbba(string underTest)
