@@ -67,17 +67,9 @@ namespace AdventOfCode
 
         private static bool ContainsAbba(string underTest)
         {
-            for (var i = 0; i < underTest.Length - 3; i++)
-            {
-                if (underTest[i] == underTest[i + 3] &&
-                    underTest[i + 1] == underTest[i + 2] &&
-                    underTest[i] != underTest[i + 1])
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return underTest
+                .Select((c, i) => i < 3 ? null : new char[] { underTest[i-3], underTest[i-2], underTest[i-1], underTest[i] })
+                .Any(ca => ca != null && ca[0] == ca[3] && ca[1] == ca[2] && ca[0] != ca[1]);
         }
 
         private static readonly string TestProblemInput = @"[abba]
