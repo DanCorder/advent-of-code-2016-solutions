@@ -65,22 +65,22 @@ namespace AdventOfCode
                 .Any(ca => ca != null && ca[0] == ca[3] && ca[1] == ca[2] && ca[0] != ca[1]);
         }
 
-        private static readonly string TestProblemInput = @"[abba]
-abba[mnop]qrst
-abcd[bddb]xyyx
-aaaa[qwer]tyui
-ioxxoj[asdfgh]zxcvbn
-ab[cd]efghi[jklmn]opqrstuv[wxyz]
-abcdefg
-abba
-[abba]cddc
-cddc[abba]
-[abba]";
+//         private static readonly string TestProblemInput = @"[abba]
+// abba[mnop]qrst
+// abcd[bddb]xyyx
+// aaaa[qwer]tyui
+// ioxxoj[asdfgh]zxcvbn
+// ab[cd]efghi[jklmn]opqrstuv[wxyz]
+// abcdefg
+// abba
+// [abba]cddc
+// cddc[abba]
+// [abba]";
 
-        private static readonly string TestProblemInput2 = @"aba[bab]xyz
-xyx[xyx]xyx
-aaa[kek]eke
-zazbz[bzb]cdb";
+//         private static readonly string TestProblemInput2 = @"aba[bab]xyz
+// xyx[xyx]xyx
+// aaa[kek]eke
+// zazbz[bzb]cdb";
 
         private static readonly string ProblemInput = @"xdsqxnovprgovwzkus[fmadbfsbqwzzrzrgdg]aeqornszgvbizdm
 itgslvpxoqqakli[arktzcssgkxktejbno]wsgkbwwtbmfnddt[zblrboqsvezcgfmfvcz]iwyhyatqetsreeyhh
