@@ -9,50 +9,16 @@ namespace AdventOfCode
         {
             var ipAddresses = ProblemInput.Replace(System.Environment.NewLine, ",").Split(',');
             // var ipAddresses = TestProblemInput.Replace(System.Environment.NewLine, ",").Split(',');
-            var count = 0;
 
-            foreach (var ipAddress in ipAddresses)
-            {
-                var isSnoopable = IsSnoopable(ipAddress);
-
-                if (isSnoopable)
-                {
-                    count++;
-                }
-
-                System.Console.Write(ipAddress + " is ");
-                if (!isSnoopable)
-                {
-                    System.Console.Write("not ");
-                }
-                System.Console.WriteLine("snoopable");
-            }
-            return count;
+            return ipAddresses.Count(IsSnoopable);
         }
 
         public static int SolveProblem2()
         {
             var ipAddresses = ProblemInput.Replace(System.Environment.NewLine, ",").Split(',');
             // var ipAddresses = TestProblemInput2.Replace(System.Environment.NewLine, ",").Split(',');
-            var count = 0;
 
-            foreach (var ipAddress in ipAddresses)
-            {
-                var isSsl = IsSsl(ipAddress);
-
-                if (isSsl)
-                {
-                    count++;
-                }
-
-                System.Console.Write(ipAddress + " is ");
-                if (!isSsl)
-                {
-                    System.Console.Write("not ");
-                }
-                System.Console.WriteLine("SSL");
-            }
-            return count;
+            return ipAddresses.Count(IsSsl);
         }
 
         private static bool IsSsl(string ipAddress)
