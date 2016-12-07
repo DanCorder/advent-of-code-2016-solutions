@@ -107,34 +107,8 @@ namespace AdventOfCode
 
         private static void Split(string ipAddress, out IList<string> outsideBrackets, out IList<string> insideBrackets)
         {
-            var startIndex = 0;
-            var isOutsideBrackets = true;
-            outsideBrackets = new List<string>();
-            insideBrackets = new List<string>();
-
-            while (startIndex < ipAddress.Length)
-            {
-                string substring = null;
-                if (isOutsideBrackets)
-                {
-                    substring = new string(ipAddress.Skip(startIndex).TakeWhile(c => c != '[').ToArray());
-                    if (!string.IsNullOrEmpty(substring))
-                    {
-                        outsideBrackets.Add(substring);
-                    }
-                }
-                else
-                {
-                    substring = new string(ipAddress.Skip(startIndex).TakeWhile(c => c != ']').ToArray());
-                    if (!string.IsNullOrEmpty(substring))
-                    {
-                        insideBrackets.Add(substring);
-                    }
-                }
-
-                isOutsideBrackets = !isOutsideBrackets;
-                startIndex += (substring.Length + 1);
-            }
+            outsideBrackets = ipAddress.Split('[', ']').Where((v, i) => i % 2 == 0 && !string.IsNullOrEmpty(v)).ToList();
+            insideBrackets = ipAddress.Split('[', ']').Where((v, i) => i % 2 == 1 && !string.IsNullOrEmpty(v)).ToList();
         }
 
         private static bool ContainsAbba(string underTest)
