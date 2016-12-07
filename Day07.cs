@@ -30,6 +30,75 @@ namespace AdventOfCode
             return count;
         }
 
+        public static int SolveProblem2()
+        {
+            var ipAddresses = ProblemInput.Replace(System.Environment.NewLine, ",").Split(',');
+            // var ipAddresses = TestProblemInput2.Replace(System.Environment.NewLine, ",").Split(',');
+            var count = 0;
+
+            foreach (var ipAddress in ipAddresses)
+            {
+                var isSsl = IsSsl(ipAddress);
+
+                if (isSsl)
+                {
+                    count++;
+                }
+
+                System.Console.Write(ipAddress + " is ");
+                if (!isSsl)
+                {
+                    System.Console.Write("not ");
+                }
+                System.Console.WriteLine("SSL");
+            }
+            return count;
+        }
+
+        private static bool IsSsl(string ipAddress)
+        {
+            IList<string> outsideBrackets;
+            IList<string> insideBrackets;
+
+            Split(ipAddress, out outsideBrackets, out insideBrackets);
+
+            var babs = new List<string>();
+
+            foreach (var supernetSequence in outsideBrackets)
+            {
+                babs.AddRange(CalculateBabs(supernetSequence));
+            }
+
+            return insideBrackets.Any(ib => ContainsBab(ib, babs));
+        }
+
+        private static IList<string> CalculateBabs(string supernetSequence)
+        {
+            var babs = new List<string>();
+            for (var i = 0; i < supernetSequence.Length - 2; i++)
+            {
+                if (supernetSequence[i] == supernetSequence[i + 2] &&
+                    supernetSequence[i] != supernetSequence[i + 1])
+                {
+                    babs.Add(new string(new char[] { supernetSequence[i + 1], supernetSequence[i], supernetSequence[i + 1] }));
+                }
+            }
+
+            return babs;
+        }
+
+        private static bool ContainsBab(string hypernetSequence, IList<string> babs)
+        {
+            foreach (var bab in babs)
+            {
+                if (hypernetSequence.Contains(bab))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static bool IsSnoopable(string ipAddress)
         {
             IList<string> outsideBrackets;
@@ -113,6 +182,11 @@ abba
 [abba]cddc
 cddc[abba]
 [abba]";
+
+        private static readonly string TestProblemInput2 = @"aba[bab]xyz
+xyx[xyx]xyx
+aaa[kek]eke
+zazbz[bzb]cdb";
 
         private static readonly string ProblemInput = @"xdsqxnovprgovwzkus[fmadbfsbqwzzrzrgdg]aeqornszgvbizdm
 itgslvpxoqqakli[arktzcssgkxktejbno]wsgkbwwtbmfnddt[zblrboqsvezcgfmfvcz]iwyhyatqetsreeyhh
