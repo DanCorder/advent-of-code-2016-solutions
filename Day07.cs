@@ -9,50 +9,16 @@ namespace AdventOfCode
         {
             var ipAddresses = ProblemInput.Replace(System.Environment.NewLine, ",").Split(',');
             // var ipAddresses = TestProblemInput.Replace(System.Environment.NewLine, ",").Split(',');
-            var count = 0;
 
-            foreach (var ipAddress in ipAddresses)
-            {
-                var isSnoopable = IsSnoopable(ipAddress);
-
-                if (isSnoopable)
-                {
-                    count++;
-                }
-
-                System.Console.Write(ipAddress + " is ");
-                if (!isSnoopable)
-                {
-                    System.Console.Write("not ");
-                }
-                System.Console.WriteLine("snoopable");
-            }
-            return count;
+            return ipAddresses.Count(IsSnoopable);
         }
 
         public static int SolveProblem2()
         {
             var ipAddresses = ProblemInput.Replace(System.Environment.NewLine, ",").Split(',');
             // var ipAddresses = TestProblemInput2.Replace(System.Environment.NewLine, ",").Split(',');
-            var count = 0;
 
-            foreach (var ipAddress in ipAddresses)
-            {
-                var isSsl = IsSsl(ipAddress);
-
-                if (isSsl)
-                {
-                    count++;
-                }
-
-                System.Console.Write(ipAddress + " is ");
-                if (!isSsl)
-                {
-                    System.Console.Write("not ");
-                }
-                System.Console.WriteLine("SSL");
-            }
-            return count;
+            return ipAddresses.Count(IsSsl);
         }
 
         private static bool IsSsl(string ipAddress)
@@ -62,41 +28,17 @@ namespace AdventOfCode
 
             Split(ipAddress, out outsideBrackets, out insideBrackets);
 
-            var babs = new List<string>();
-
-            foreach (var supernetSequence in outsideBrackets)
-            {
-                babs.AddRange(CalculateBabs(supernetSequence));
-            }
-
-            return insideBrackets.Any(ib => ContainsBab(ib, babs));
+            return outsideBrackets
+                .SelectMany(ob => CalculateBabs(ob))
+                .Any(bab => insideBrackets.Any(ib => ib.Contains(bab)));
         }
 
-        private static IList<string> CalculateBabs(string supernetSequence)
+        private static IEnumerable<string> CalculateBabs(string supernetSequence)
         {
-            var babs = new List<string>();
-            for (var i = 0; i < supernetSequence.Length - 2; i++)
-            {
-                if (supernetSequence[i] == supernetSequence[i + 2] &&
-                    supernetSequence[i] != supernetSequence[i + 1])
-                {
-                    babs.Add(new string(new char[] { supernetSequence[i + 1], supernetSequence[i], supernetSequence[i + 1] }));
-                }
-            }
-
-            return babs;
-        }
-
-        private static bool ContainsBab(string hypernetSequence, IList<string> babs)
-        {
-            foreach (var bab in babs)
-            {
-                if (hypernetSequence.Contains(bab))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return supernetSequence
+                .Select((c, i) => i < 2 ? null : new char[] { supernetSequence[i - 2], supernetSequence[i - 1], supernetSequence[i] })
+                .Where(ca => ca != null && ca[0] == ca[2] && ca[0] != ca[1])
+                .Select(ca => new string(new char[] { ca[1], ca[0], ca[1]}));
         }
 
         private static bool IsSnoopable(string ipAddress)
@@ -106,69 +48,21 @@ namespace AdventOfCode
 
             Split(ipAddress, out outsideBrackets, out insideBrackets);
 
-            if (insideBrackets.Any(ContainsAbba))
-            {
-                return false;
-            }
-            if (outsideBrackets.Any(ContainsAbba))
-            {
-                return true;
-            }
-            return false;
+            return outsideBrackets.Any(ContainsAbba) &&
+                    !insideBrackets.Any(ContainsAbba);
         }
 
         private static void Split(string ipAddress, out IList<string> outsideBrackets, out IList<string> insideBrackets)
         {
-            var startIndex = 0;
-            var isOutsideBrackets = true;
-            outsideBrackets = new List<string>();
-            insideBrackets = new List<string>();
-
-            while (startIndex < ipAddress.Length)
-            {
-                string substring = null;
-                if (isOutsideBrackets)
-                {
-                    substring = GetSubstring(ipAddress, startIndex, '[');
-                    if (!string.IsNullOrEmpty(substring))
-                    {
-                        outsideBrackets.Add(substring);
-                    }
-                }
-                else
-                {
-                    substring = GetSubstring(ipAddress, startIndex, ']');
-                    if (!string.IsNullOrEmpty(substring))
-                    {
-                        insideBrackets.Add(substring);
-                    }
-                }
-
-                isOutsideBrackets = !isOutsideBrackets;
-                startIndex += (substring.Length + 1);
-            }
-        }
-
-        private static string GetSubstring(string ipAddress, int startIndex, char endChar)
-        {
-            var endIndex = ipAddress.IndexOf(endChar, startIndex);
-            endIndex = endIndex == -1 ? ipAddress.Length : endIndex;
-            return ipAddress.Substring(startIndex, endIndex - startIndex);
+            outsideBrackets = ipAddress.Split('[', ']').Where((v, i) => i % 2 == 0 && !string.IsNullOrEmpty(v)).ToList();
+            insideBrackets = ipAddress.Split('[', ']').Where((v, i) => i % 2 == 1 && !string.IsNullOrEmpty(v)).ToList();
         }
 
         private static bool ContainsAbba(string underTest)
         {
-            for (var i = 0; i < underTest.Length - 3; i++)
-            {
-                if (underTest[i] == underTest[i + 3] &&
-                    underTest[i + 1] == underTest[i + 2] &&
-                    underTest[i] != underTest[i + 1])
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return underTest
+                .Select((c, i) => i < 3 ? null : new char[] { underTest[i-3], underTest[i-2], underTest[i-1], underTest[i] })
+                .Any(ca => ca != null && ca[0] == ca[3] && ca[1] == ca[2] && ca[0] != ca[1]);
         }
 
         private static readonly string TestProblemInput = @"[abba]
