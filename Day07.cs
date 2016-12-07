@@ -33,19 +33,12 @@ namespace AdventOfCode
                 .Any(bab => insideBrackets.Any(ib => ib.Contains(bab)));
         }
 
-        private static IList<string> CalculateBabs(string supernetSequence)
+        private static IEnumerable<string> CalculateBabs(string supernetSequence)
         {
-            var babs = new List<string>();
-            for (var i = 0; i < supernetSequence.Length - 2; i++)
-            {
-                if (supernetSequence[i] == supernetSequence[i + 2] &&
-                    supernetSequence[i] != supernetSequence[i + 1])
-                {
-                    babs.Add(new string(new char[] { supernetSequence[i + 1], supernetSequence[i], supernetSequence[i + 1] }));
-                }
-            }
-
-            return babs;
+            return supernetSequence
+                .Select((c, i) => i < 2 ? null : new char[] { supernetSequence[i - 2], supernetSequence[i - 1], supernetSequence[i] })
+                .Where(ca => ca != null && ca[0] == ca[2] && ca[0] != ca[1])
+                .Select(ca => new string(new char[] { ca[1], ca[0], ca[1]}));
         }
 
         private static bool IsSnoopable(string ipAddress)
