@@ -62,14 +62,9 @@ namespace AdventOfCode
 
             Split(ipAddress, out outsideBrackets, out insideBrackets);
 
-            var babs = new List<string>();
-
-            foreach (var supernetSequence in outsideBrackets)
-            {
-                babs.AddRange(CalculateBabs(supernetSequence));
-            }
-
-            return insideBrackets.Any(ib => babs.Any(bab => ib.Contains(bab)));
+            return outsideBrackets
+                .SelectMany(ob => CalculateBabs(ob))
+                .Any(bab => insideBrackets.Any(ib => ib.Contains(bab)));
         }
 
         private static IList<string> CalculateBabs(string supernetSequence)
