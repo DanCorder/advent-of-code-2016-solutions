@@ -37,6 +37,33 @@ namespace AdventOfCode
             return "Finished";
         }
 
+        public static int SolveProblem2()
+        {
+            var lines = ProblemInput.SplitToLines().ToList();
+
+            var initialState = lines.Where(l => l.StartsWith("value"));
+            var instructions = lines.Where(l => l.StartsWith("bot"));
+
+            var outputs = new Dictionary<int, Output>();
+            var bots = new Dictionary<int, Bot>();
+
+            foreach (var state in initialState)
+            {
+                SetInitialState(state, bots);
+            }
+            foreach (var instruction in instructions)
+            {
+                SetInstruction(instruction, bots, outputs);
+            }
+
+            foreach (var bot in bots.Values)
+            {
+                bot.Activate();
+            }
+
+            return outputs[0].Value * outputs[1].Value * outputs[2].Value;
+        }
+
         private static void SetInstruction(string instruction, Dictionary<int, Bot> bots, Dictionary<int, Output> outputs)
         {
             var details = InstructionParser.Match(instruction);
@@ -91,12 +118,6 @@ namespace AdventOfCode
             }
         }
 
-        public static string SolveProblem2()
-        {
-            var instructions = TestProblemInput2.Split('\r', '\n').Where(i => !string.IsNullOrEmpty(i));
-            return TestProblemInput2;
-        }
-
         private interface IRecpient
         {
             void ReceiveChip(int chipValue);
@@ -111,9 +132,11 @@ namespace AdventOfCode
                 Id = id;
             }
 
+            public int Value { get; set; }
+
             public void ReceiveChip(int chipValue)
             {
-                // do nothing
+                Value = chipValue;
             }
         }
 
@@ -146,11 +169,8 @@ namespace AdventOfCode
                 {
                     Console.WriteLine("Bot " + Id + " is the one");
                 }
-                else
-                {
-                    highRecipent.ReceiveChip(Math.Max(chips[0], chips[1]));
-                    lowRecipient.ReceiveChip(Math.Min(chips[0], chips[1]));
-                }
+                highRecipent.ReceiveChip(Math.Max(chips[0], chips[1]));
+                lowRecipient.ReceiveChip(Math.Min(chips[0], chips[1]));
             }
 
             public void Activate()
