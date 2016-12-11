@@ -6,13 +6,13 @@ namespace AdventOfCode
     {
         public static string SolveProblem1()
         {
-            var instructions = TestProblemInput1.Split('\r', '\n').Where(i => !string.IsNullOrEmpty(i));
+            var instructions = TestProblemInput1.SplitToLines();
             return TestProblemInput1;
         }
 
         public static string SolveProblem2()
         {
-            var instructions = TestProblemInput2.Split('\r', '\n').Where(i => !string.IsNullOrEmpty(i));
+            var instructions = TestProblemInput2.SplitToLines();
             return TestProblemInput2;
         }
 
