@@ -83,10 +83,19 @@ namespace AdventOfCode
             Registers[match.Groups[2].Value[0]] = firstValue;
         }
 
-        public static string SolveProblem2()
+        public static int SolveProblem2()
         {
-            var instructions = TestProblemInput2.SplitToLines();
-            return TestProblemInput2;
+            Registers['c'] = 1;
+
+            var instructions = ProblemInput.SplitToLines().ToArray();
+            // var instructions = TestProblemInput1.SplitToLines().ToArray();
+
+            while (CurrentInstruction < instructions.Length)
+            {
+                CurrentInstruction += Execute(instructions[CurrentInstruction]);
+            }
+
+            return Registers['a'];
         }
 
         private static readonly string TestProblemInput1 = @"cpy 41 a
