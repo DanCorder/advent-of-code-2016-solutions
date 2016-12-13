@@ -25,6 +25,15 @@ namespace AdventOfCode
             return result.Distance;
         }
 
+        public static int SolveProblem2()
+        {
+            var start = new State { XPos = 1, YPos = 1, Distance = 0};
+
+            var result = BreadthFirstSearch2(start, GetNextStates);
+
+            return result;
+        }
+
         private static IEnumerable<State> GetNextStates(State currentState)
         {
             var nextStates = new List<State>();
@@ -93,12 +102,6 @@ namespace AdventOfCode
             // return state.XPos == 7 && state.YPos == 4;
         }
 
-        // public static string SolveProblem2()
-        // {
-        //     var instructions = TestProblemInput2.SplitToLines();
-        //     return TestProblemInput2;
-        // }
-
         private static State BreadthFirstSearch(
             State startingState,
             Func<State, IEnumerable<State>> getNextStates,
@@ -132,6 +135,37 @@ namespace AdventOfCode
             }
 
             return finalState;
+        }
+
+        private static int BreadthFirstSearch2(
+            State startingState,
+            Func<State, IEnumerable<State>> getNextStates)
+        {
+            var stateQueue = new Queue<State>();
+            stateQueue.Enqueue(startingState);
+            var currentDepth = -1;
+            var placesVisited = 0;
+            while (stateQueue.Count > 0)
+            {
+                var currentState = stateQueue.Dequeue();
+                VisitedSpaces[currentState.XPos, currentState.YPos] = true;
+
+                if (currentDepth != currentState.Distance)
+                {
+                    placesVisited += (stateQueue.Count + 1);
+                    if (currentState.Distance == 50)
+                        break;
+                    currentDepth = currentState.Distance;
+                    Console.WriteLine("Depth: " + currentDepth + " Number of moves to check: " + (stateQueue.Count + 1) + " " + DateTime.Now);
+                }
+
+                var nextStates = getNextStates(currentState);
+
+                foreach (var nextState in nextStates)
+                    stateQueue.Enqueue(nextState);
+            }
+
+            return placesVisited;
         }
 
         private struct State
