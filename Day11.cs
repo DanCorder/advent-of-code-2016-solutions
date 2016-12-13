@@ -7,55 +7,67 @@ namespace AdventOfCode
     public class Day11
     {
         private static HashSet<State> PreviousStates = new HashSet<State>();
+        // private const int NUMBER_OF_ELEMENTS = 2;
+        private const int NUMBER_OF_ELEMENTS = 5;
 
         public static int SolveProblem1()
         {
-            // var initialState = ProblemInput;
-            var initialState = TestProblemInput1;;
+            var ProblemInput = new State {
+                CurrentFloor = 0,
+                Positions = 0
+            };
 
-            Array.Sort(initialState.GeneratorChipPositions);
+            ProblemInput.SetPositions(new Position[] {
+                    new Position() { GeneratorFloor = 0, ChipFloor = 1 }, // Polonium
+                    new Position() { GeneratorFloor = 0, ChipFloor = 1 }, // Prometheum
+                    new Position() { GeneratorFloor = 0, ChipFloor = 0 }, // Thulium
+                    new Position() { GeneratorFloor = 0, ChipFloor = 0 }, // Ruthenium
+                    new Position() { GeneratorFloor = 0, ChipFloor = 0 } // Cobalt
+                }
+            );
+            // ProblemInput.SetPositions(new Position[] {
+            //         new Position() { GeneratorFloor = 2, ChipFloor = 0 }, // Lithium
+            //         new Position() { GeneratorFloor = 1, ChipFloor = 0 } // Hydrogen
+            //     }
+            // );
 
-            var result = BreadthFirstSearch(initialState, GetNextStates, IsEndState);
+            var result = BreadthFirstSearch(ProblemInput, GetNextStates, IsEndState);
 
-            return result.Distance;
+            return result;
         }
 
-        private static State BreadthFirstSearch(
+        private static int BreadthFirstSearch(
             State startingState,
             Func<State, IEnumerable<State>> getNextStates,
             Func<State, bool> isEndState)
         {
             State finalState = startingState;
-            var stateQueue = new Queue<State>();
-            stateQueue.Enqueue(startingState);
-            var currentDepth = -1;
-            while (stateQueue.Count > 0)
+            var nextStateQueue = new List<State>();
+            nextStateQueue.Add(startingState);
+
+            var currentDepth = 0;
+            while (nextStateQueue.Count > 0)
             {
-                var currentState = stateQueue.Dequeue();
-                PreviousStates.Add(currentState);
+                Console.WriteLine("Depth: " + currentDepth + " Number of moves to check: " + nextStateQueue.Count + " " + DateTime.Now);
 
-                if (currentDepth != currentState.Distance)
+                var stateQueue = nextStateQueue;
+                nextStateQueue = new List<State>();
+                currentDepth++;
+
+                foreach (var currentState in stateQueue)
                 {
-                    currentDepth = currentState.Distance;
-                    Console.WriteLine("Depth: " + currentDepth + " Number of moves to check: " + (stateQueue.Count + 1) + " " + DateTime.Now);
-                }
+                    PreviousStates.Add(currentState);
 
-                var nextStates = getNextStates(currentState);
+                    var nextStates = getNextStates(currentState);
 
-                foreach (var nextState in nextStates)
-                {
-                    stateQueue.Enqueue(nextState);
+                    if (nextStates.Any(IsEndState))
+                        return currentDepth;
 
-                    if (isEndState(nextState))
-                    {
-                        finalState = nextState;
-                        stateQueue.Clear();
-                        break;
-                    }
+                    nextStateQueue.AddRange(nextStates);
                 }
             }
 
-            return finalState;
+            return -1;
         }
 
         private static IEnumerable<State> GetNextStates(State currentState)
@@ -74,19 +86,20 @@ namespace AdventOfCode
 
         private static bool IsValidState(State state)
         {
-            return state.GeneratorChipPositions.All(p =>
+            var positions = state.DecompressPositions();
+            return positions.All(p =>
                 p.ChipFloor == p.GeneratorFloor ||
-                state.GeneratorChipPositions.All(p2 => p2.GeneratorFloor != p.ChipFloor));
+                positions.All(p2 => p2.GeneratorFloor != p.ChipFloor));
         }
 
         private static IEnumerable<State> GetAllPossibleNextStates(State currentState)
         {
             var nextStates = new List<State>();
-            if (currentState.CurrentFloor != 1)
+            if (currentState.CurrentFloor != 0)
             {
                 nextStates.AddRange(GetStatesToFloor(currentState.CurrentFloor - 1, currentState));
             }
-            if (currentState.CurrentFloor != 4)
+            if (currentState.CurrentFloor != 3)
             {
                 nextStates.AddRange(GetStatesToFloor(currentState.CurrentFloor + 1, currentState));
             }
@@ -104,25 +117,26 @@ namespace AdventOfCode
         private static IEnumerable<State> GetSingleMoveStatesToFloor(int nextFloor, State currentState)
         {
             var nextStates = new List<State>();
+            var positions = currentState.DecompressPositions();
 
-            for (var i = 0; i < currentState.GeneratorChipPositions.Length; i++)
+            for (var i = 0; i < positions.Count; i++)
             {
-                if (currentState.GeneratorChipPositions[i].ChipFloor == currentState.CurrentFloor)
+                if (positions[i].ChipFloor == currentState.CurrentFloor)
                 {
                     var nextState = currentState.Clone();
                     nextState.CurrentFloor = nextFloor;
-                    nextState.GeneratorChipPositions[i].ChipFloor = nextFloor;
-                    Array.Sort(nextState.GeneratorChipPositions);
-                    nextState.Distance = currentState.Distance + 1;
+                    var nextPositions = positions.Select(p => p.Clone()).ToArray();
+                    nextPositions[i].ChipFloor = nextFloor;
+                    nextState.SetPositions(nextPositions);
                     nextStates.Add(nextState);
                 }
-                if (currentState.GeneratorChipPositions[i].GeneratorFloor == currentState.CurrentFloor)
+                if (positions[i].GeneratorFloor == currentState.CurrentFloor)
                 {
                     var nextState = currentState.Clone();
                     nextState.CurrentFloor = nextFloor;
-                    nextState.GeneratorChipPositions[i].GeneratorFloor = nextFloor;
-                    Array.Sort(nextState.GeneratorChipPositions);
-                    nextState.Distance = currentState.Distance + 1;
+                    var nextPositions = positions.Select(p => p.Clone()).ToArray();
+                    nextPositions[i].GeneratorFloor = nextFloor;
+                    nextState.SetPositions(nextPositions);
                     nextStates.Add(nextState);
                 }
             }
@@ -131,40 +145,41 @@ namespace AdventOfCode
 
         private static IEnumerable<State> GetDoubleMoveStatesToFloor(int nextFloor, State currentState)
         {
+            var positions = currentState.DecompressPositions();
             var nextStates = new List<State>();
 
-            for (var i = 0; i < currentState.GeneratorChipPositions.Length * 2; i++)
+            for (var i = 0; i < positions.Count * 2; i++)
             {
-                if ((i % 2 == 0 && currentState.GeneratorChipPositions[i/2].GeneratorFloor == currentState.CurrentFloor) ||
-                    (i % 2 == 1 && currentState.GeneratorChipPositions[i/2].ChipFloor == currentState.CurrentFloor))
+                if ((i % 2 == 0 && positions[i/2].GeneratorFloor == currentState.CurrentFloor) ||
+                    (i % 2 == 1 && positions[i/2].ChipFloor == currentState.CurrentFloor))
                 {
-                    for (var j = i + 1; j < currentState.GeneratorChipPositions.Length * 2; j++)
+                    for (var j = i + 1; j < positions.Count * 2; j++)
                     {
-                        if ((j % 2 == 0 && currentState.GeneratorChipPositions[j/2].GeneratorFloor == currentState.CurrentFloor) ||
-                            (j % 2 == 1 && currentState.GeneratorChipPositions[j/2].ChipFloor == currentState.CurrentFloor))
+                        if ((j % 2 == 0 && positions[j/2].GeneratorFloor == currentState.CurrentFloor) ||
+                            (j % 2 == 1 && positions[j/2].ChipFloor == currentState.CurrentFloor))
                         {
                             var nextState = currentState.Clone();
                             nextState.CurrentFloor = nextFloor;
+                            var nextPositions = positions.Select(p => p.Clone()).ToArray();
 
                             if (i%2 == 0)
                             {
-                                nextState.GeneratorChipPositions[i/2].GeneratorFloor = nextFloor;
+                                nextPositions[i/2].GeneratorFloor = nextFloor;
                             }
                             else
                             {
-                                nextState.GeneratorChipPositions[i/2].ChipFloor = nextFloor;
+                                nextPositions[i/2].ChipFloor = nextFloor;
                             }
                             if (j%2 == 0)
                             {
-                                nextState.GeneratorChipPositions[j/2].GeneratorFloor = nextFloor;
+                                nextPositions[j/2].GeneratorFloor = nextFloor;
                             }
                             else
                             {
-                                nextState.GeneratorChipPositions[j/2].ChipFloor = nextFloor;
+                                nextPositions[j/2].ChipFloor = nextFloor;
                             }
 
-                            Array.Sort(nextState.GeneratorChipPositions);
-                            nextState.Distance = currentState.Distance + 1;
+                            nextState.SetPositions(nextPositions);
                             nextStates.Add(nextState);
                         }
                     }
@@ -175,49 +190,64 @@ namespace AdventOfCode
 
         private static bool IsEndState(State state)
         {
-            return state.GeneratorChipPositions.All(t => t.GeneratorFloor == 4 && t.ChipFloor == 4);
-        }
-
-        public static string SolveProblem2()
-        {
-            var instructions = TestProblemInput2.SplitToLines();
-            return TestProblemInput2;
+            return state.DecompressPositions().All(t => t.GeneratorFloor == 3 && t.ChipFloor == 3);
         }
 
         private struct State
         {
             public int CurrentFloor;
-            public Position[] GeneratorChipPositions;
-            public int Distance;
+            public int Positions;
+
+            public IList<Position> DecompressedPositions => DecompressPositions();
+
+            public IList<Position> DecompressPositions()
+            {
+                var ret = new List<Position>();
+
+                for (int i = 0; i < NUMBER_OF_ELEMENTS; i++)
+                {
+                    ret.Add(new Position() { GeneratorFloor = GetFloorAt(2*i), ChipFloor = GetFloorAt(2*i + 1)});
+                }
+
+                return ret;
+            }
+
+            public void SetPositions(Position[] positions)
+            {
+                Array.Sort(positions);
+
+                for (int i = 0; i < NUMBER_OF_ELEMENTS; i++)
+                {
+                    SetFloorAt(2*i, positions[i].GeneratorFloor);
+                    SetFloorAt(2*i + 1, positions[i].ChipFloor);
+                }
+            }
+
+            private int GetFloorAt(int index)
+            {
+                int mask = 3; // 11 in binary
+                mask = mask << (index * 2);
+                var maskedPostions = Positions & mask;
+                return maskedPostions >> (index * 2);
+            }
+
+            private void SetFloorAt(int index, int floor)
+            {
+                var floorInPosition = floor << (index * 2);
+                int mask = 3; // 11 in binary
+                mask = ~(mask << (index * 2));
+                Positions = Positions & mask;
+                Positions = Positions | floorInPosition;
+            }
 
             public State Clone()
             {
-                var clone = new State() {
+                return new State() {
                     CurrentFloor = this.CurrentFloor,
-                    Distance = this.Distance,
-                    GeneratorChipPositions = new Position[this.GeneratorChipPositions.Length]
+                    Positions = this.Positions
                 };
-                Array.Copy(this.GeneratorChipPositions,
-                    clone.GeneratorChipPositions,
-                    this.GeneratorChipPositions.Length);
-
-                return clone;
-            }
-
-            public override int GetHashCode()
-            {
-                return CurrentFloor.GetHashCode() * 17 + Distance.GetHashCode() + GetPosHashCode(GeneratorChipPositions);
-            }
-
-            private int GetPosHashCode(Position[] generatorChipPositions)
-            {
-                return generatorChipPositions
-                    .Select((p, i) => ((p.ChipFloor * 5) + (p.GeneratorFloor)) * primes[i])
-                    .Sum();
             }
         }
-
-        private static readonly int[] primes = { 23, 29, 31, 37, 39};
 
         private struct Position : IComparable<Position>
         {
@@ -232,27 +262,14 @@ namespace AdventOfCode
                 }
                 return other.ChipFloor - this.ChipFloor;
             }
-        }
 
-        private static readonly State TestProblemInput1 = new State {
-            CurrentFloor = 1,
-            Distance = 0,
-            GeneratorChipPositions = new Position[] {
-                new Position() { GeneratorFloor = 3, ChipFloor = 1 }, // Lithium
-                new Position() { GeneratorFloor = 2, ChipFloor = 1 } // Hydrogen
+            public Position Clone()
+            {
+                return new Position() {
+                    GeneratorFloor = this.GeneratorFloor,
+                    ChipFloor = this.ChipFloor
+                };
             }
-        };
-        private static readonly string TestProblemInput2 = @"qq";
-        private static readonly State ProblemInput = new State {
-            CurrentFloor = 1,
-            Distance = 0,
-            GeneratorChipPositions = new Position[] {
-                new Position() { GeneratorFloor = 1, ChipFloor = 2 }, // Polonium
-                new Position() { GeneratorFloor = 1, ChipFloor = 2 }, // Prometheum
-                new Position() { GeneratorFloor = 1, ChipFloor = 1 }, // Thulium
-                new Position() { GeneratorFloor = 1, ChipFloor = 1 }, // Ruthenium
-                new Position() { GeneratorFloor = 1, ChipFloor = 1 } // Cobalt
-            }
-        };
+        }
     }
 }
