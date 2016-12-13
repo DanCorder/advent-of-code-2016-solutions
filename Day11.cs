@@ -40,16 +40,19 @@ namespace AdventOfCode
                     Console.WriteLine("Depth: " + currentDepth + " Number of moves to check: " + (stateQueue.Count + 1) + " " + DateTime.Now);
                 }
 
-                if (isEndState(currentState))
-                {
-                    finalState = currentState;
-                    break;
-                }
-
                 var nextStates = getNextStates(currentState);
 
                 foreach (var nextState in nextStates)
+                {
                     stateQueue.Enqueue(nextState);
+
+                    if (isEndState(nextState))
+                    {
+                        finalState = nextState;
+                        stateQueue.Clear();
+                        break;
+                    }
+                }
             }
 
             return finalState;
@@ -201,8 +204,20 @@ namespace AdventOfCode
                 return clone;
             }
 
-            // qq Implement gethashcode
+            public override int GetHashCode()
+            {
+                return CurrentFloor.GetHashCode() * 17 + Distance.GetHashCode() + GetPosHashCode(GeneratorChipPositions);
+            }
+
+            private int GetPosHashCode(Position[] generatorChipPositions)
+            {
+                return generatorChipPositions
+                    .Select((p, i) => ((p.ChipFloor * 5) + (p.GeneratorFloor)) * primes[i])
+                    .Sum();
+            }
         }
+
+        private static readonly int[] primes = { 23, 29, 31, 37, 39};
 
         private struct Position : IComparable<Position>
         {
