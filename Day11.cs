@@ -8,7 +8,8 @@ namespace AdventOfCode
     {
         private static HashSet<State> seenStates = new HashSet<State>();
         // private const int NUMBER_OF_ELEMENTS = 2;
-        private const int NUMBER_OF_ELEMENTS = 5;
+        // private const int NUMBER_OF_ELEMENTS = 5;
+        private const int NUMBER_OF_ELEMENTS = 7;
 
 
         public static int SolveProblem1()
@@ -31,6 +32,27 @@ namespace AdventOfCode
             //         new Position() { GeneratorFloor = 1, ChipFloor = 0 } // Hydrogen
             //     }
             // );
+
+            return BreadthFirstSearch(ProblemInput, GetNextStates, IsEndState);
+        }
+
+        public static int SolveProblem2()
+        {
+            var ProblemInput = new State {
+                CurrentFloor = 0,
+                Positions = 0
+            };
+
+            ProblemInput.SetPositions(new Position[] {
+                    new Position() { GeneratorFloor = 0, ChipFloor = 1 }, // Polonium
+                    new Position() { GeneratorFloor = 0, ChipFloor = 1 }, // Prometheum
+                    new Position() { GeneratorFloor = 0, ChipFloor = 0 }, // Thulium
+                    new Position() { GeneratorFloor = 0, ChipFloor = 0 }, // Ruthenium
+                    new Position() { GeneratorFloor = 0, ChipFloor = 0 }, // Cobalt
+                    new Position() { GeneratorFloor = 0, ChipFloor = 0 }, // Elerium
+                    new Position() { GeneratorFloor = 0, ChipFloor = 0 }  // Dilithium
+                }
+            );
 
             return BreadthFirstSearch(ProblemInput, GetNextStates, IsEndState);
         }
