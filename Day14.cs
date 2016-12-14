@@ -1,5 +1,6 @@
 namespace AdventOfCode
 {
+    using System;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -10,24 +11,13 @@ namespace AdventOfCode
     {
         public static int SolveProblem1()
         {
-            //24846 too high
+            Console.WriteLine("Start: " + DateTime.Now);
+            // 23769
             var key = @"cuanljph";
             // var key = "abc";
-            var index = 1; // Test 0 manually it's not relevant
+            var index = 1; // Tested 0 manually it's not relevant
             var foundTriples = new Dictionary<int, char>();
             var foundKeys = new List<int>();
-
-            // for (var i = 1; i < 10000; i++)
-            // {
-            //     var hash = CalculateMD5Hash(key + i);
-            //     var tripleChar = GetTripleChar(hash);
-
-            //     if (tripleChar != null)
-            //     {
-            //         System.Console.WriteLine(hash + " " + tripleChar);
-            //     }
-            // }
-
 
             while (true)
             {
@@ -45,11 +35,12 @@ namespace AdventOfCode
                 {
                     if (quintupleChars.Contains(triple.Value))
                     {
-                        System.Console.WriteLine("Found key for char " + triple.Value + " at " + triple.Key);
+                        Console.WriteLine("Found key for char " + triple.Value + " at " + triple.Key);
                         foundKeys.Add(triple.Key);
                         foundKeys.Sort();
                         if (foundKeys.Count >= 64 && index > foundKeys[63] + 1000)
                         {
+                            Console.WriteLine("End: " + DateTime.Now);
                             return foundKeys[63];
                         }
                         foundTriples.Remove(triple.Key);
@@ -57,53 +48,88 @@ namespace AdventOfCode
                 }
                 if (tripleChar != null)
                 {
-                    System.Console.WriteLine("Found triple " + tripleChar.Value + " at " + index);
+                    // Console.WriteLine("Found triple " + tripleChar.Value + " at " + index);
                     foundTriples.Add(index, tripleChar.Value);
                 }
 
                 index++;
             }
-            // return -1;
+        }
+
+        public static int SolveProblem2()
+        {
+            Console.WriteLine("Start: " + DateTime.Now);
+            // 20606
+            var key = @"cuanljph";
+            // var key = "abc";
+
+            var index = 1; // Tested 0 manually it's not relevant
+            var foundTriples = new Dictionary<int, char>();
+            var foundKeys = new List<int>();
+
+            while (true)
+            {
+                if (foundTriples.ContainsKey(index - 1001))
+                {
+                    foundTriples.Remove(index - 1001);
+                }
+
+                var hash = CalculateMD5Hash2017(key + index);
+
+                var tripleChar = GetTripleChar(hash);
+                var quintupleChars = GetQuintupleChars(hash).ToArray();
+
+                foreach (var triple in foundTriples.OrderBy(p => p.Key))
+                {
+                    if (quintupleChars.Contains(triple.Value))
+                    {
+                        Console.WriteLine("Found key for char " + triple.Value + " at " + triple.Key);
+                        foundKeys.Add(triple.Key);
+                        foundKeys.Sort();
+                        if (foundKeys.Count >= 64 && index > foundKeys[63] + 1000)
+                        {
+                            Console.WriteLine("End: " + DateTime.Now);
+                            return foundKeys[63];
+                        }
+                        foundTriples.Remove(triple.Key);
+                    }
+                }
+                if (tripleChar != null)
+                {
+                    // Console.WriteLine("Found triple " + tripleChar.Value + " at " + index);
+                    foundTriples.Add(index, tripleChar.Value);
+                }
+
+                index++;
+            }
         }
 
         private static IEnumerable<char> GetQuintupleChars(string hash)
         {
-            // var chars = new List<char>();
-            // var match = QuintupleMatcher.Match(hash);
-            // if (match.Success)
-            // {
-            //     for (var i = 1; i < match.Groups.Count; i++)
-
-            //     chars.Add(match.Groups[i].Value[0]);
-            // }
-            // return chars;
-            return hash.Where((c, i) => i >= 4 && hash.Substring(i - 4, 4).All(ssc => ssc == c)).Distinct();
+            var chars = new List<char>();
+            var match = QuintupleMatcher.Match(hash);
+            if (match.Success)
+            {
+                for (var i = 1; i < match.Groups.Count; i++)
+                    chars.Add(match.Groups[i].Value[0]);
+            }
+            return chars.Distinct();
         }
 
         private static readonly Regex TripleMatcher =
-            new Regex(@"(.)\1{2,2}", RegexOptions.Compiled);
+            new Regex(@"(.)\1{2,}", RegexOptions.Compiled);
 
         private static readonly Regex QuintupleMatcher =
-            new Regex(@"(.)\1{4,4}", RegexOptions.Compiled);
+            new Regex(@"(.)\1{4,}", RegexOptions.Compiled);
 
         private static char? GetTripleChar(string hash)
         {
-            var triples = hash.Where((c, i) => i >= 2 && hash.Substring(i - 2, 2).All(ssc => ssc == c)).Distinct().ToList();
-            return triples.Count > 0 ? (char?)triples[0] : null;
-
-
-            // var match = TripleMatcher.Match(hash);
-            // if (match.Success)
-            // {
-            //     return match.Groups[1].Value[0];
-            // }
-            // return null;
-        }
-
-        public static string SolveProblem2()
-        {
-            var instructions = TestProblemInput2.SplitToLines();
-            return TestProblemInput2;
+            var match = TripleMatcher.Match(hash);
+            if (match.Success)
+            {
+                return match.Groups[1].Value[0];
+            }
+            return null;
         }
 
         private static readonly MD5 md5 = System.Security.Cryptography.MD5.Create();
@@ -123,8 +149,15 @@ namespace AdventOfCode
             return sb.ToString();
         }
 
-        private static readonly string TestProblemInput1 = @"abc";
-        private static readonly string TestProblemInput2 = @"qq";
-        private static readonly string ProblemInput = @"cuanljph";
+        private static string CalculateMD5Hash2017(string input)
+        {
+            var stretchedHash = input;
+            for (var i = 0; i < 2017; i++)
+            {
+                // Console.WriteLine(stretchedHash);
+                stretchedHash = CalculateMD5Hash(stretchedHash.ToLower());
+            }
+            return stretchedHash;
+        }
     }
 }
