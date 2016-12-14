@@ -6,9 +6,10 @@ namespace AdventOfCode
 
     public class Day11
     {
-        private static HashSet<State> PreviousStates = new HashSet<State>();
+        private static HashSet<State> seenStates = new HashSet<State>();
         // private const int NUMBER_OF_ELEMENTS = 2;
         private const int NUMBER_OF_ELEMENTS = 5;
+
 
         public static int SolveProblem1()
         {
@@ -31,9 +32,7 @@ namespace AdventOfCode
             //     }
             // );
 
-            var result = BreadthFirstSearch(ProblemInput, GetNextStates, IsEndState);
-
-            return result;
+            return BreadthFirstSearch(ProblemInput, GetNextStates, IsEndState);
         }
 
         private static int BreadthFirstSearch(
@@ -44,6 +43,7 @@ namespace AdventOfCode
             State finalState = startingState;
             var nextStateQueue = new List<State>();
             nextStateQueue.Add(startingState);
+            seenStates.Add(startingState);
 
             var currentDepth = 0;
             while (nextStateQueue.Count > 0)
@@ -56,14 +56,16 @@ namespace AdventOfCode
 
                 foreach (var currentState in stateQueue)
                 {
-                    PreviousStates.Add(currentState);
-
                     var nextStates = getNextStates(currentState);
 
                     if (nextStates.Any(IsEndState))
                         return currentDepth;
 
-                    nextStateQueue.AddRange(nextStates);
+                    foreach(var nextState in nextStates)
+                    {
+                        seenStates.Add(nextState);
+                        nextStateQueue.Add(nextState);
+                    }
                 }
             }
 
@@ -81,7 +83,7 @@ namespace AdventOfCode
             return allStates
                 .Distinct()
                 .Where(IsValidState)
-                .Where(s => !PreviousStates.Contains(s));
+                .Where(s => !seenStates.Contains(s));
         }
 
         private static bool IsValidState(State state)
