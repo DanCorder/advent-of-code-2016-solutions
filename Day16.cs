@@ -23,6 +23,22 @@ namespace AdventOfCode
             return checksum;
         }
 
+        public static string SolveProblem2()
+        {
+            Console.WriteLine("Start: " + DateTime.Now);
+            // var discLength = 20;
+            // var initialState = "10000";
+            var discLength = 35651584;
+            var initialState = "10111100110001111";
+
+            var data = GenerateData(discLength, initialState);
+            Console.WriteLine("Data: " + data);
+            var checksum = GenerateFinalChecksum(data);
+
+            Console.WriteLine("End: " + DateTime.Now);
+            return checksum;
+        }
+
         private static string GenerateFinalChecksum(string data)
         {
             IList<char> checksum = data.ToList();
@@ -55,15 +71,6 @@ namespace AdventOfCode
             }
 
             return data.ToString().Substring(0, discLength);
-        }
-
-        public static string SolveProblem2()
-        {
-            Console.WriteLine("Start: " + DateTime.Now);
-            var instructions = TestProblemInput2.SplitToLines();
-
-            Console.WriteLine("End: " + DateTime.Now);
-            return TestProblemInput2;
         }
 
         private static readonly string TestProblemInput1 = @"qq";
