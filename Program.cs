@@ -36,8 +36,8 @@ namespace AdventOfCode
             // Console.WriteLine(Day15.SolveProblem1());
             // Console.WriteLine(Day15.SolveProblem2());
             // Console.WriteLine(Day16.SolveProblem1());
-            Console.WriteLine(Day16.SolveProblem2());
-            // Console.WriteLine(Day17.SolveProblem1());
+            // Console.WriteLine(Day16.SolveProblem2());
+            Console.WriteLine(Day17.SolveProblem1());
             // Console.WriteLine(Day17.SolveProblem2());
             // Console.WriteLine(Day18.SolveProblem1());
             // Console.WriteLine(Day18.SolveProblem2());
