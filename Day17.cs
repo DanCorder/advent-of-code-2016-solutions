@@ -23,13 +23,14 @@ namespace AdventOfCode
             return result.path;
         }
 
-        public static string SolveProblem2()
+        public static int SolveProblem2()
         {
             Console.WriteLine("Start: " + DateTime.Now);
-            var instructions = TestProblemInput2.SplitToLines();
+
+            var result = BreadthFirstSearch2(new State(), GetNextStates, IsEndState);
 
             Console.WriteLine("End: " + DateTime.Now);
-            return TestProblemInput2;
+            return result;
         }
 
         private static State BreadthFirstSearch(
@@ -37,7 +38,6 @@ namespace AdventOfCode
             Func<State, IEnumerable<State>> getNextStates,
             Func<State, bool> isEndState)
         {
-            State finalState = startingState;
             var nextStateQueue = new List<State>();
             nextStateQueue.Add(startingState);
 
@@ -66,6 +66,44 @@ namespace AdventOfCode
             }
 
             return startingState;
+        }
+
+        // depth first would be quicker, but I already have this code and it's still very fast.
+        private static int BreadthFirstSearch2(
+            State startingState,
+            Func<State, IEnumerable<State>> getNextStates,
+            Func<State, bool> isEndState)
+        {
+            int deepestSolution = 0;
+            var nextStateQueue = new List<State>();
+            nextStateQueue.Add(startingState);
+
+            var currentDepth = 0;
+            while (nextStateQueue.Count > 0)
+            {
+                Console.WriteLine("Depth: " + currentDepth + " Number of moves to check: " + nextStateQueue.Count + " " + DateTime.Now);
+
+                var stateQueue = nextStateQueue;
+                nextStateQueue = new List<State>();
+                currentDepth++;
+
+                foreach (var currentState in stateQueue)
+                {
+                    var nextStates = getNextStates(currentState);
+
+                    foreach(var nextState in nextStates)
+                    {
+                        if (IsEndState(nextState))
+                        {
+                            deepestSolution = currentDepth;
+                        }
+                        else
+                            nextStateQueue.Add(nextState);
+                    }
+                }
+            }
+
+            return deepestSolution;
         }
 
         private static IEnumerable<State> GetNextStates(State currentState)
