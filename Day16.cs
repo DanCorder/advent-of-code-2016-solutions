@@ -72,9 +72,5 @@ namespace AdventOfCode
 
             return data.ToString().Substring(0, discLength);
         }
-
-        private static readonly string TestProblemInput1 = @"qq";
-        private static readonly string TestProblemInput2 = @"qq";
-        // private static readonly string ProblemInput = @"10111100110001111";
     }
 }

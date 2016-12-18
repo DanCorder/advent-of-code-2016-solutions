@@ -98,13 +98,12 @@ namespace AdventOfCode
             return Registers['a'];
         }
 
-        private static readonly string TestProblemInput1 = @"cpy 41 a
-inc a
-inc a
-dec a
-jnz a 2
-dec a";
-        private static readonly string TestProblemInput2 = @"qq";
+//         private static readonly string TestProblemInput1 = @"cpy 41 a
+// inc a
+// inc a
+// dec a
+// jnz a 2
+// dec a";
         private static readonly string ProblemInput = @"cpy 1 a
 cpy 1 b
 cpy 26 d
