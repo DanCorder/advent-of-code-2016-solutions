@@ -26,6 +26,26 @@ namespace AdventOfCode
             return safeTiles;
         }
 
+        public static int SolveProblem2()
+        {
+            Console.WriteLine("Start: " + DateTime.Now);
+            //var input = ".^^.^.^^^^";
+            //var numberOfRows = 10;
+            var input = ".^^^.^.^^^.^.......^^.^^^^.^^^^..^^^^^.^.^^^..^^.^.^^..^.^..^^...^.^^.^^^...^^.^.^^^..^^^^.....^....";
+            var numberOfRows = 400000;
+
+            var firstRowTraps = input.Select(c => c == '^').ToArray();
+
+            var floor = GetFloor(firstRowTraps, numberOfRows);
+
+            // printFloor(floor);
+
+            var safeTiles = floor.Sum(r => r.Sum(t => t ? 0 : 1));
+
+            Console.WriteLine("End: " + DateTime.Now);
+            return safeTiles;
+        }
+
         private static void printFloor(bool[][] floor)
         {
             foreach(var row in floor)
@@ -57,18 +77,5 @@ namespace AdventOfCode
 
             return paddedNextRow.Skip(1).Take(previousRow.Length).ToArray();
         }
-
-        public static string SolveProblem2()
-        {
-            Console.WriteLine("Start: " + DateTime.Now);
-            var instructions = TestProblemInput2.SplitToLines();
-
-            Console.WriteLine("End: " + DateTime.Now);
-            return TestProblemInput2;
-        }
-
-        private static readonly string TestProblemInput1 = @"qq";
-        private static readonly string TestProblemInput2 = @"qq";
-        // private static readonly string ProblemInput = @"qq";
     }
 }
