@@ -25,14 +25,7 @@ namespace AdventOfCode
                 currentElf = currentElf.Next;
                 if (currentElf == null)
                     currentElf = elves.First;
-
-                // if (elves.Count % 10000 == 0)
-                // {
-                //     Console.WriteLine("Time: " + DateTime.Now);
-                //     Console.WriteLine("Elves left: " + elves.Count);
-                // }
             }
-
 
             Console.WriteLine("End: " + DateTime.Now);
             return elves.First.Value;
@@ -42,11 +35,9 @@ namespace AdventOfCode
         {
             Console.WriteLine("Start: " + DateTime.Now);
             var elvesList = Enumerable.Range(1, 3005290).ToList();
-            // var elvesList = Enumerable.Range(1, 5).ToList();
             var elves = new LinkedList<int>(elvesList);
 
-            var currentElf = elves.First;
-            var currentSteal = GetElfToStealFrom(elves, currentElf);
+            var currentSteal = GetElfToStealFrom(elves, elves.First);
 
             while (elves.Count > 1)
             {
@@ -62,17 +53,7 @@ namespace AdventOfCode
 
                 elves.Remove(currentSteal);
 
-                currentElf = currentElf.Next;
-                if (currentElf == null)
-                    currentElf = elves.First;
-
                 currentSteal = nextSteal;
-
-                // if (elves.Count % 10000 == 0)
-                // {
-                //     Console.WriteLine("Time: " + DateTime.Now);
-                //     Console.WriteLine("Elves left: " + elves.Count);
-                // }
             }
 
 
