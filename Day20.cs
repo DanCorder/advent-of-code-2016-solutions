@@ -26,19 +26,37 @@ namespace AdventOfCode
             }
         }
 
-        public static string SolveProblem2()
+        public static long SolveProblem2()
         {
             Console.WriteLine("Start: " + DateTime.Now);
-            var instructions = TestProblemInput2.SplitToLines();
+            var ranges = ProblemInput.SplitToLines()
+                .Select(l => Tuple.Create(long.Parse(l.Split('-')[0]), long.Parse(l.Split('-')[1])));
+            var orderedRanges = ranges.OrderBy(t => t.Item1);
 
-            Console.WriteLine("End: " + DateTime.Now);
-            return TestProblemInput2;
+            long numberOfIps = 4294967295L + 1L;
+            Tuple<long, long> previousRange = null;
+
+            foreach(var range in orderedRanges)
+            {
+                if (previousRange == null)
+                {
+                    numberOfIps -= (range.Item2 - range.Item1 + 1);
+                }
+                else
+                {
+                    if (range.Item2 <= previousRange.Item2)
+                        continue;
+
+                    var effectiveRange = Tuple.Create(Math.Max(range.Item1, previousRange.Item2 + 1), range.Item2);
+                    numberOfIps -= (effectiveRange.Item2 - effectiveRange.Item1 + 1);
+                }
+
+                previousRange = range;
+            }
+
+            return numberOfIps;
         }
 
-        private static readonly string TestProblemInput1 = @"5-8
-0-2
-4-7";
-        private static readonly string TestProblemInput2 = @"qq";
         private static readonly string ProblemInput = @"2365712272-2390766206
 2569947483-2579668543
 1348241901-1362475328
