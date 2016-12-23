@@ -26,7 +26,7 @@ namespace AdventOfCode
                 // Console.WriteLine("b=" + Registers['b']);
                 // Console.WriteLine("c=" + Registers['c']);
                 // Console.WriteLine("d=" + Registers['d']);
-                // Console.WriteLine("Executing: " + instructions[CurrentInstruction]);
+                // Console.WriteLine("Executing: " + instructions[CurrentInstruction] + " at " + CurrentInstruction);
 
                 CurrentInstruction += Execute(instructions[CurrentInstruction], CurrentInstruction, instructions);
             }
@@ -36,6 +36,26 @@ namespace AdventOfCode
 
         private static int Execute(string instruction, int currentInstruction, string[] instructions)
         {
+            if (currentInstruction == 4)
+            {
+                if (instructions[4] == "cpy b c" &&
+                  instructions[5] == "inc a" &&
+                instructions[6] == "dec c" &&
+                instructions[7] == "jnz c -2" &&
+                instructions[8] == "dec d" &&
+                instructions[9] == "jnz d -5")
+                {
+                    Registers['a'] += (Registers['b'] * Registers['d']);
+                    Registers['c'] = 0;
+                    Registers['d'] = 0;
+                    return 6;
+                }
+                else
+                {
+                    Console.WriteLine("Mulitplier changed");
+                }
+            }
+
             if (instruction.StartsWith("inc"))
             {
                 Registers[instruction[4]] = Registers[instruction[4]] + 1;
@@ -58,12 +78,13 @@ namespace AdventOfCode
             }
             else
             {
-                return Jump(instruction.Substring(4));
+                return Jump(instruction.Substring(4), currentInstruction, instructions);
             }
         }
 
-        private static int Jump(string values)
+        private static int Jump(string values, int currentInstruction, string[] instructions)
         {
+            // General case
             var parser = new Regex(@"(\w|\d+) (-?)([\w|\d+])");
             var match = parser.Match(values);
 
@@ -159,20 +180,27 @@ namespace AdventOfCode
             instructions[index] = newInstruction;
         }
 
-        // public static int SolveProblem2()
-        // {
-        //     Registers['c'] = 1;
+        public static int SolveProblem2()
+        {
+            Registers['a'] = 12;
 
-        //     var instructions = ProblemInput.SplitToLines().ToArray();
-        //     // var instructions = TestProblemInput1.SplitToLines().ToArray();
+            var instructions = ProblemInput.SplitToLines().ToArray();
+            // var instructions = TestProblemInput1.SplitToLines().ToArray();
 
-        //     while (CurrentInstruction < instructions.Length)
-        //     {
-        //         CurrentInstruction += Execute(instructions[CurrentInstruction]);
-        //     }
+            while (CurrentInstruction < instructions.Length)
+            {
+                // Console.WriteLine("Registers");
+                // Console.WriteLine("a=" + Registers['a']);
+                // Console.WriteLine("b=" + Registers['b']);
+                // Console.WriteLine("c=" + Registers['c']);
+                // Console.WriteLine("d=" + Registers['d']);
+                Console.WriteLine("Executing: " + instructions[CurrentInstruction] + " at " + CurrentInstruction);
 
-        //     return Registers['a'];
-        // }
+                CurrentInstruction += Execute(instructions[CurrentInstruction], CurrentInstruction, instructions);
+            }
+
+            return Registers['a'];
+        }
 
         private static readonly string TestProblemInput1 = @"cpy 2 a
 tgl a
