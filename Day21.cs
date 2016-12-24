@@ -204,15 +204,14 @@ namespace AdventOfCode
             return new string(chars);
         }
 
-        private static readonly string TestProblemInput1 = @"swap position 4 with position 0
-swap letter d with letter b
-reverse positions 0 through 4
-rotate left 1 step
-move position 1 to position 4
-move position 3 to position 0
-rotate based on position of letter b
-rotate based on position of letter d";
-        private static readonly string TestProblemInput2 = @"qq";
+//         private static readonly string TestProblemInput1 = @"swap position 4 with position 0
+// swap letter d with letter b
+// reverse positions 0 through 4
+// rotate left 1 step
+// move position 1 to position 4
+// move position 3 to position 0
+// rotate based on position of letter b
+// rotate based on position of letter d";
         private static readonly string ProblemInput = @"rotate based on position of letter d
 move position 1 to position 6
 swap position 3 with position 6
