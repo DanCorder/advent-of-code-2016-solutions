@@ -85,7 +85,7 @@ namespace AdventOfCode
         private static int Jump(string values, int currentInstruction, string[] instructions)
         {
             // General case
-            var parser = new Regex(@"(\w|\d+) (-?)([\w|\d+])");
+            var parser = new Regex(@"(\w|\d+) (-?)([\w|\d]+)");
             var match = parser.Match(values);
 
             int firstValue = 0;
